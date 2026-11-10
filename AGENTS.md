@@ -25,3 +25,17 @@
 - Коммиты строго по Conventional Commits: `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:` и т.д. Формат проверяется hk-хуком commit-msg. После клонирования выполнить `hk install --mise`.
 - Не править `.github/workflows/hexlet-check.yml` — это автоматические тесты Хекслета.
 - API-контракт для будущих фич: TypeSpec → OpenAPI → клиентский SDK для фронтенда.
+
+## Agent skills
+
+### Issue tracker
+
+Задачи и спецификации живут в GitHub Issues этого репозитория (`Iskuskov/ai-for-developers-project-386`), работа через `gh` CLI. См. `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Пять канонических ролей triage со строками меток по умолчанию: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. См. `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `GLOSSARY.md` в корне репозитория, решения в `docs/adr/`. См. `docs/agents/domain.md`.
