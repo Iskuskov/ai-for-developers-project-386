@@ -43,16 +43,30 @@
 
 ## Установка
 
-<!-- Опишите установку: клонирование, зависимости, переменные окружения -->
+Требуется [mise](https://mise.jdx.dev/) (`curl https://mise.run | sh`) — он подтянет Java 25, Node.js 26, pnpm и остальные инструменты по `mise.toml`.
 
 ```bash
 git clone https://github.com/Iskuskov/ai-for-developers-project-386.git
 cd ai-for-developers-project-386
+mise install       # инструменты
+mise run install   # зависимости бекенда и фронтенда
+hk install --mise  # git-хуки: линтеры и проверка формата коммитов
 ```
 
 ## Использование
 
-<!-- Добавьте примеры запуска и запись asciinema — именно это смотрит работодатель -->
+```bash
+mise run dev:backend   # бекенд: http://localhost:8080
+mise run dev:frontend  # фронтенд: http://localhost:5173
+
+# или оба сервера фоном:
+mise daemons start
+
+# все проверки (линтеры, тесты, сборка) — то же, что запускает CI:
+mise run check
+```
+
+Полный список задач: `mise tasks ls`. Рабочие правила для агентов — в [AGENTS.md](AGENTS.md).
 
 ---
 
