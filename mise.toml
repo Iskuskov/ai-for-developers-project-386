@@ -1,0 +1,78 @@
+[settings]
+experimental = true
+
+# core-бэкенд java недоступен из этой сети (mise-java.jdx.dev таймаутит),
+# поэтому Java ставим через asdf-java (Adoptium API)
+[plugins]
+java = "https://github.com/halcyon/asdf-java"
+
+[tools]
+java = "temurin-25.0.4+7.0.LTS" # asdf-java plugin (halcyon/asdf-java), см. [plugins]
+node = "26"
+pnpm = "12"
+google-java-format = "2.0.0"
+hk = "2.12.0"
+pitchfork = "2.34.0"
+
+[tasks.install]
+description = "Установить зависимости бекенда и фронтенда"
+depends = ["install:backend", "install:frontend"]
+
+[tasks."install:backend"]
+description = "Скачать Gradle и зависимости бекенда"
+run = "cd backend && ./gradlew help --console=plain -q"
+
+[tasks."install:frontend"]
+description = "Установить зависимости фронтенда (pnpm)"
+run = "cd frontend && pnpm install --frozen-lockfile"
+
+[tasks."dev:backend"]
+description = "Запустить бекенд (http://localhost:8080)"
+run = "cd backend && ./gradlew bootRun"
+
+[tasks."dev:frontend"]
+description = "Запустить фронтенд (http://localhost:5173)"
+run = "cd frontend && pnpm dev"
+
+[tasks."test:backend"]
+description = "Запустить тесты бекенда (JUnit)"
+depends = ["install:backend"]
+run = "cd backend && ./gradlew test"
+
+[tasks."test:frontend"]
+description = "Запустить тесты фронтенда (Vitest)"
+depends = ["install:frontend"]
+run = "cd frontend && pnpm test"
+
+[tasks."lint:backend"]
+description = "Проверить форматирование Java-кода (google-java-format)"
+run = "find backend/src -name '*.java' -print0 | xargs -0 google-java-format --dry-run --set-exit-if-changed"
+
+[tasks."format:backend"]
+description = "Отформатировать Java-код (google-java-format)"
+run = "find backend/src -name '*.java' -print0 | xargs -0 google-java-format --replace"
+
+[tasks."lint:frontend"]
+description = "Линт фронтенда (oxlint)"
+depends = ["install:frontend"]
+run = "cd frontend && pnpm lint"
+
+[tasks."build:frontend"]
+description = "Проверка типов и сборка фронтенда"
+depends = ["install:frontend"]
+run = "cd frontend && pnpm build"
+
+[tasks.check]
+description = "Все проверки: линтеры, тесты, сборка фронтенда (то же, что в CI)"
+depends = ["lint:backend", "lint:frontend", "test:backend", "test:frontend", "build:frontend"]
+
+[daemons.backend]
+task = "dev:backend"
+ready_port = 8080
+
+[daemons.frontend]
+task = "dev:frontend"
+ready_port = 5173
+
+[daemon_groups]
+default = ["backend", "frontend"]

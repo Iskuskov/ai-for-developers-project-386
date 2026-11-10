@@ -1,0 +1,10 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+
+# Локальные переопределения mise
+mise.local.toml
