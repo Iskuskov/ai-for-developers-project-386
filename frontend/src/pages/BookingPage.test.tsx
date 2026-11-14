@@ -49,4 +49,14 @@ describe('BookingPage', () => {
 
     expect(await screen.findByText('Не удалось загрузить типы встреч')).toBeInTheDocument()
   })
+
+  it('links each event type to its slot calendar page', async () => {
+    listEventTypesMock.mockResolvedValue({ data: seed } as Awaited<ReturnType<typeof listEventTypes>>)
+    render(<BookingPage />)
+
+    const links = await screen.findAllByRole('link', { name: 'Записаться' })
+    expect(links).toHaveLength(2)
+    expect(links[0]).toHaveAttribute('href', '/booking/greeting')
+    expect(links[1]).toHaveAttribute('href', '/booking/consultation')
+  })
 })

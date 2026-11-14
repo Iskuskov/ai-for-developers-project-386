@@ -1,6 +1,7 @@
 import {
   Anchor,
   Box,
+  Button,
   Card,
   Container,
   Divider,
@@ -63,6 +64,9 @@ export function BookingPage() {
                     <Title order={3}>{eventType.title}</Title>
                     <Text c="dimmed">{eventType.description}</Text>
                     <Text size="sm">Длительность: {eventType.durationMinutes} мин</Text>
+                    <Button component={Link} to={`/booking/${eventType.id}`}>
+                      Записаться
+                    </Button>
                   </Stack>
                 </Card>
               ))}

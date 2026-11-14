@@ -8,6 +8,7 @@ export default defineConfig({
     // В dev API-запросы ходят на бекенд-демон (mise daemons start)
     proxy: {
       '/event-types': 'http://localhost:8080',
+      '/slots': 'http://localhost:8080',
     },
   },
   test: {
