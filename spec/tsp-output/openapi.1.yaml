@@ -21,8 +21,46 @@ paths:
                   $ref: '#/components/schemas/EventType'
       tags:
         - EventTypes
+    post:
+      operationId: createEventType
+      description: Создание типа встречи владельцем.
+      parameters: []
+      responses:
+        '201':
+          description: Созданный тип встречи.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventType'
+        '400':
+          description: Некорректные данные запроса.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      tags:
+        - EventTypes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventTypeInput'
 components:
   schemas:
+    ApiError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Машиночитаемый код ошибки.
+        message:
+          type: string
+          description: Сообщение об ошибке для человека.
+      description: 'Ошибка запроса: машиночитаемый код и сообщение для человека.'
     EventType:
       type: object
       required:
@@ -45,3 +83,23 @@ components:
           format: int32
           description: Длительность звонка в минутах.
       description: 'Вид звонка: название, описание и длительность.'
+    EventTypeInput:
+      type: object
+      required:
+        - title
+        - description
+        - durationMinutes
+      properties:
+        title:
+          type: string
+          minLength: 1
+          description: Название типа встречи.
+        description:
+          type: string
+          description: Описание для гостей.
+        durationMinutes:
+          type: integer
+          format: int32
+          description: Длительность звонка в минутах.
+          exclusiveMinimum: 0
+      description: 'Данные для создания типа встречи: название, описание и длительность.'
