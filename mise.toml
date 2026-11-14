@@ -40,6 +40,13 @@ description = "Вся цепочка контракта: TypeSpec → OpenAPI �
 depends = ["gen:spec"]
 run = "cd spec && pnpm gen:client"
 
+[tasks."gen:check"]
+description = "Перегенерировать контракт и SDK, упасть при ручных правках сгенерированного"
+depends = ["gen:client"]
+run = """
+git diff --exit-code -- spec/main.tsp spec/tsp-output frontend/src/shared/api   || (echo 'Сгенерированные файлы отличаются от закоммиченных: контракт или шаблоны менялись без перегенерации. Запустите mise run gen:client и закоммитьте результат; сгенерированное руками не правим.' && exit 1)
+"""
+
 [tasks."install:playwright"]
 description = "Установить браузер Chromium для Playwright (e2e)"
 depends = ["install:frontend"]
@@ -87,8 +94,8 @@ depends = ["build:frontend", "install:playwright"]
 run = "cd frontend && pnpm exec playwright test"
 
 [tasks.check]
-description = "Все проверки: линтеры, тесты, сборка фронтенда, e2e (то же, что в CI)"
-depends = ["lint:backend", "lint:frontend", "test:backend", "test:frontend", "check:e2e"]
+description = "Все проверки: линтеры, тесты, сборка фронтенда, e2e, дрейф генерации (то же, что в CI)"
+depends = ["lint:backend", "lint:frontend", "test:backend", "test:frontend", "gen:check", "check:e2e"]
 
 [daemons.backend]
 task = "dev:backend"

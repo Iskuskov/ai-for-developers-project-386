@@ -18,14 +18,15 @@
 - `mise run test:backend` / `mise run test:frontend` — тесты (JUnit, Vitest)
 - `mise run lint:backend` / `mise run lint:frontend` — линтеры (google-java-format, oxlint)
 - `mise run format:backend` — автоформат Java-кода
-- `mise run check` — все проверки разом; GitHub Actions запускает эту же команду на каждый push
+- `mise run check` — все проверки разом: линтеры, тесты, сборка фронтенда, перегенерация контракта и сквозной браузерный сценарий (Playwright) на живом сервере без подмены ответов API; GitHub Actions запускает эту же команду на каждый push
 
 ## Правила
 
 - Коммиты строго по Conventional Commits: `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:` и т.д. Формат проверяется hk-хуком commit-msg. После клонирования выполнить `hk install --mise`.
 - Коммит реализации ссылается на тикет, который он закрывает, например `feat: запись на свободный слот (#12)`. GitHub превращает номер в ссылку, и по истории видно, какой коммит какую задачу делал.
 - Не править `.github/workflows/hexlet-check.yml` — это автоматические тесты Хекслета.
-- API-контракт для будущих фич: TypeSpec → OpenAPI → клиентский SDK для фронтенда.
+- API-контракт для будущих фич: TypeSpec → OpenAPI → клиентский SDK для фронтенда. Вся цепочка перегенерируется одной командой `mise run gen:client`; CI перегенерирует её же и падает при дрейфе (`mise run gen:check` внутри `mise run check`).
+- Сгенерированные файлы руками не правим: `spec/tsp-output/openapi.1.yaml` и `frontend/src/shared/api/`. Источник правок — контракт `spec/main.tsp`; изменили контракт → перегенерировали → закоммитили всё вместе.
 
 ## Agent skills
 
