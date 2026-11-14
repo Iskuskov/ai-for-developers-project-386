@@ -6,6 +6,7 @@ import static org.mockito.Mockito.lenient;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,7 +130,12 @@ class ListBookingsApiTest {
   /** Тестовая фикстура: заносит прошедшую Запись напрямую в store, минуя валидацию POST. */
   private void seedPastBooking(String slotStart) {
     Booking past =
-        new Booking("past-1", "consultation", slotStart, "Мария", "past-guest@example.com");
+        new Booking(
+            "past-1",
+            "consultation",
+            LocalDateTime.parse(slotStart, SlotService.START_FORMAT),
+            "Мария",
+            "past-guest@example.com");
     boolean reserved = bookingStore.reserve(past, Duration.ofMinutes(30));
     assertThat(reserved)
         .as("фикстура: прошедшая Запись должна сохраниться без конфликтов")

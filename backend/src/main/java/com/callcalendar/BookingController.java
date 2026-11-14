@@ -51,9 +51,9 @@ public class BookingController {
         useReturnTypeSchema = true)
   })
   @GetMapping(value = "/bookings", produces = "application/json")
-  public List<Booking> list() {
+  public List<BookingResponse> list() {
     LocalDateTime now = clock.instant().atZone(SlotService.WORK_ZONE).toLocalDateTime();
-    return bookings.findUpcoming(now);
+    return bookings.findUpcoming(now).stream().map(BookingResponse::from).toList();
   }
 
   @Operation(
@@ -75,11 +75,11 @@ public class BookingController {
   })
   @PostMapping(value = "/bookings", consumes = "application/json", produces = "application/json")
   @ResponseStatus(HttpStatus.CREATED)
-  public Booking create(@Valid @RequestBody BookingInput input) {
+  public BookingResponse create(@Valid @RequestBody BookingInput input) {
     EventType eventType =
         eventTypeStore
             .findById(input.eventTypeId())
             .orElseThrow(() -> new EventTypeNotFoundException(input.eventTypeId()));
-    return bookingService.create(eventType, input);
+    return BookingResponse.from(bookingService.create(eventType, input));
   }
 }

@@ -38,7 +38,7 @@ public class BookingService {
         new Booking(
             UUID.randomUUID().toString(),
             eventType.id(),
-            input.slotStart(),
+            start,
             input.guestName(),
             input.guestEmail());
     if (!bookings.reserve(booking, Duration.ofMinutes(eventType.durationMinutes()))) {

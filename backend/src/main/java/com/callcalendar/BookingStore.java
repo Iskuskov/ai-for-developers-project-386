@@ -40,7 +40,7 @@ public class BookingStore implements BookingOccupancy {
 
   @Override
   public synchronized boolean reserve(Booking booking, Duration duration) {
-    LocalDateTime start = LocalDateTime.parse(booking.slotStart(), SlotService.START_FORMAT);
+    LocalDateTime start = booking.slotStart();
     Interval candidate = new Interval(start, start.plus(duration));
     boolean overlapping =
         items.stream()
