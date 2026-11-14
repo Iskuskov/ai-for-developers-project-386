@@ -19,6 +19,54 @@ export type ApiError = {
 };
 
 /**
+ * Запись: подтверждённое бронирование слота гостем.
+ */
+export type Booking = {
+    /**
+     * Идентификатор записи.
+     */
+    id: string;
+    /**
+     * Идентификатор типа встречи.
+     */
+    eventTypeId: string;
+    /**
+     * Дата и время старта записи, ISO 8601 (YYYY-MM-DDTHH:mm:ss), время Europe/Moscow.
+     */
+    slotStart: string;
+    /**
+     * Имя гостя.
+     */
+    guestName: string;
+    /**
+     * Email гостя.
+     */
+    guestEmail: string;
+};
+
+/**
+ * Данные для создания записи: тип встречи, старт слота, имя и email гостя.
+ */
+export type BookingInput = {
+    /**
+     * Идентификатор типа встречи.
+     */
+    eventTypeId: string;
+    /**
+     * Дата и время старта слота, ISO 8601 (YYYY-MM-DDTHH:mm:ss), время Europe/Moscow.
+     */
+    slotStart: string;
+    /**
+     * Имя гостя.
+     */
+    guestName: string;
+    /**
+     * Email гостя.
+     */
+    guestEmail: string;
+};
+
+/**
  * Вид звонка: название, описание и длительность.
  */
 export type EventType = {
@@ -71,6 +119,35 @@ export type Slot = {
      */
     available: boolean;
 };
+
+export type CreateBookingData = {
+    body: BookingInput;
+    path?: never;
+    query?: never;
+    url: '/bookings';
+};
+
+export type CreateBookingErrors = {
+    /**
+     * Некорректные данные запроса.
+     */
+    400: ApiError;
+    /**
+     * Время уже занято другой записью.
+     */
+    409: ApiError;
+};
+
+export type CreateBookingError = CreateBookingErrors[keyof CreateBookingErrors];
+
+export type CreateBookingResponses = {
+    /**
+     * Созданная запись.
+     */
+    201: Booking;
+};
+
+export type CreateBookingResponse = CreateBookingResponses[keyof CreateBookingResponses];
 
 export type ListEventTypesData = {
     body?: never;

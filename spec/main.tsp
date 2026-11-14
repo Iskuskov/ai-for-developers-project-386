@@ -95,3 +95,60 @@ interface Slots {
     @query date: plainDate,
   ): Slot[] | ValidationError;
 }
+
+@doc("Запись: подтверждённое бронирование слота гостем.")
+model Booking {
+  @doc("Идентификатор записи.")
+  id: string;
+
+  @doc("Идентификатор типа встречи.")
+  eventTypeId: string;
+
+  @doc("Дата и время старта записи, ISO 8601 (YYYY-MM-DDTHH:mm:ss), время Europe/Moscow.")
+  slotStart: string;
+
+  @doc("Имя гостя.")
+  guestName: string;
+
+  @doc("Email гостя.")
+  guestEmail: string;
+}
+
+@doc("Данные для создания записи: тип встречи, старт слота, имя и email гостя.")
+model BookingInput {
+  @doc("Идентификатор типа встречи.")
+  eventTypeId: string;
+
+  @doc("Дата и время старта слота, ISO 8601 (YYYY-MM-DDTHH:mm:ss), время Europe/Moscow.")
+  slotStart: string;
+
+  @doc("Имя гостя.")
+  @minLength(1)
+  guestName: string;
+
+  @doc("Email гостя.")
+  guestEmail: string;
+}
+
+@doc("Созданная запись.")
+model CreatedBooking {
+  @statusCode statusCode: 201;
+
+  @body body: Booking;
+}
+
+@doc("Время уже занято другой записью.")
+@error
+model SlotTakenError {
+  @statusCode statusCode: 409;
+
+  @body body: ApiError;
+}
+
+@route("/bookings")
+@tag("Bookings")
+interface Bookings {
+  @operationId("createBooking")
+  @doc("Создание записи гостем на свободный слот.")
+  @post create(@body requestBody: BookingInput): CreatedBooking | SlotTakenError | ValidationError;
+}

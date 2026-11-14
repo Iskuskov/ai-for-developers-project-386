@@ -5,7 +5,40 @@ info:
 tags:
   - name: EventTypes
   - name: Slots
+  - name: Bookings
 paths:
+  /bookings:
+    post:
+      operationId: createBooking
+      description: Создание записи гостем на свободный слот.
+      parameters: []
+      responses:
+        '201':
+          description: Созданная запись.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '400':
+          description: Некорректные данные запроса.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Время уже занято другой записью.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      tags:
+        - Bookings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingInput'
   /event-types:
     get:
       operationId: listEventTypes
@@ -99,6 +132,53 @@ components:
           type: string
           description: Сообщение об ошибке для человека.
       description: 'Ошибка запроса: машиночитаемый код и сообщение для человека.'
+    Booking:
+      type: object
+      required:
+        - id
+        - eventTypeId
+        - slotStart
+        - guestName
+        - guestEmail
+      properties:
+        id:
+          type: string
+          description: Идентификатор записи.
+        eventTypeId:
+          type: string
+          description: Идентификатор типа встречи.
+        slotStart:
+          type: string
+          description: Дата и время старта записи, ISO 8601 (YYYY-MM-DDTHH:mm:ss), время Europe/Moscow.
+        guestName:
+          type: string
+          description: Имя гостя.
+        guestEmail:
+          type: string
+          description: Email гостя.
+      description: 'Запись: подтверждённое бронирование слота гостем.'
+    BookingInput:
+      type: object
+      required:
+        - eventTypeId
+        - slotStart
+        - guestName
+        - guestEmail
+      properties:
+        eventTypeId:
+          type: string
+          description: Идентификатор типа встречи.
+        slotStart:
+          type: string
+          description: Дата и время старта слота, ISO 8601 (YYYY-MM-DDTHH:mm:ss), время Europe/Moscow.
+        guestName:
+          type: string
+          minLength: 1
+          description: Имя гостя.
+        guestEmail:
+          type: string
+          description: Email гостя.
+      description: 'Данные для создания записи: тип встречи, старт слота, имя и email гостя.'
     EventType:
       type: object
       required:

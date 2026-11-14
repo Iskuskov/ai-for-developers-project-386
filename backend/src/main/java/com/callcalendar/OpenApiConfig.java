@@ -17,7 +17,9 @@ public class OpenApiConfig {
   OpenAPI callCalendarOpenApi() {
     return new OpenAPI()
         .info(new Info().title("Call Calendar API").version("1.0.0"))
-        .tags(List.of(new Tag().name("EventTypes"), new Tag().name("Slots")));
+        .tags(
+            List.of(
+                new Tag().name("EventTypes"), new Tag().name("Slots"), new Tag().name("Bookings")));
   }
 
   /** TypeSpec для @query-параметров всегда пишет explode: false — зеркалим это в springdoc. */
