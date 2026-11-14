@@ -73,6 +73,25 @@ describe('SlotCalendarPage', () => {
     expect(screen.getByRole('button', { name: '10:00' })).toBeDisabled()
   })
 
+  it('initial slot fetch asks for today in Europe/Moscow, not the browser timezone', async () => {
+    // Момент, когда в Москве уже 5 марта, а в браузерной зоне (UTC-5) ещё 4 марта
+    vi.useFakeTimers({
+      now: new Date('2026-03-04T18:00:00-05:00'),
+      shouldAdvanceTime: true,
+    })
+    listEventTypesMock.mockResolvedValue({
+      data: [eventType],
+    } as Awaited<ReturnType<typeof listEventTypes>>)
+    listSlotsMock.mockResolvedValue({ data: [] } as Awaited<ReturnType<typeof listSlots>>)
+    renderCalendarPage()
+    await screen.findByRole('heading', { name: /Консультация/ })
+    vi.useRealTimers()
+
+    expect(listSlotsMock).toHaveBeenCalledWith({
+      query: { eventTypeId: 'consultation', date: '2026-03-05' },
+    })
+  })
+
   it('clicking an available slot selects it', async () => {
     listEventTypesMock.mockResolvedValue({
       data: [eventType],
