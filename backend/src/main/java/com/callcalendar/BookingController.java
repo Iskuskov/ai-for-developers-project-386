@@ -77,9 +77,8 @@ public class BookingController {
   @ResponseStatus(HttpStatus.CREATED)
   public Booking create(@Valid @RequestBody BookingInput input) {
     EventType eventType =
-        eventTypeStore.findAll().stream()
-            .filter(type -> type.id().equals(input.eventTypeId()))
-            .findFirst()
+        eventTypeStore
+            .findById(input.eventTypeId())
             .orElseThrow(() -> new EventTypeNotFoundException(input.eventTypeId()));
     return bookingService.create(eventType, input);
   }

@@ -61,9 +61,8 @@ public class SlotController {
               explode = Explode.FALSE)
           LocalDate date) {
     EventType eventType =
-        eventTypeStore.findAll().stream()
-            .filter(type -> type.id().equals(eventTypeId))
-            .findFirst()
+        eventTypeStore
+            .findById(eventTypeId)
             .orElseThrow(() -> new EventTypeNotFoundException(eventTypeId));
     return slotService.slotsOf(eventType, date);
   }
