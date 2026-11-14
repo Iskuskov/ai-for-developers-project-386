@@ -4,6 +4,7 @@ info:
   version: 1.0.0
 tags:
   - name: EventTypes
+  - name: Slots
 paths:
   /event-types:
     get:
@@ -21,8 +22,58 @@ paths:
                   $ref: '#/components/schemas/EventType'
       tags:
         - EventTypes
+  /slots:
+    get:
+      operationId: listSlots
+      description: Сетка 30-минутных стартов с признаком занятости на запрошенную дату.
+      parameters:
+        - name: eventTypeId
+          in: query
+          required: true
+          description: Идентификатор типа встречи.
+          schema:
+            type: string
+          explode: false
+        - name: date
+          in: query
+          required: true
+          description: Дата, на которую запрашиваются слоты (YYYY-MM-DD).
+          schema:
+            type: string
+            format: date
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Slot'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      tags:
+        - Slots
 components:
   schemas:
+    ApiError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Машинный код ошибки.
+        message:
+          type: string
+          description: Понятное человеку сообщение.
+      description: Единый формат ошибок API.
     EventType:
       type: object
       required:
@@ -45,3 +96,16 @@ components:
           format: int32
           description: Длительность звонка в минутах.
       description: 'Вид звонка: название, описание и длительность.'
+    Slot:
+      type: object
+      required:
+        - start
+        - available
+      properties:
+        start:
+          type: string
+          description: Дата и время старта слота, ISO 8601 (YYYY-MM-DDTHH:mm:ss), время Europe/Moscow.
+        available:
+          type: boolean
+          description: Доступен ли слот для записи.
+      description: 'Слот: старт на 30-минутной сетке рабочих часов и признак доступности для записи.'

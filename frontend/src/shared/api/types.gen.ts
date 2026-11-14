@@ -5,6 +5,20 @@ export type ClientOptions = {
 };
 
 /**
+ * Единый формат ошибок API.
+ */
+export type ApiError = {
+    /**
+     * Машинный код ошибки.
+     */
+    code: string;
+    /**
+     * Понятное человеку сообщение.
+     */
+    message: string;
+};
+
+/**
  * Вид звонка: название, описание и длительность.
  */
 export type EventType = {
@@ -26,6 +40,20 @@ export type EventType = {
     durationMinutes: number;
 };
 
+/**
+ * Слот: старт на 30-минутной сетке рабочих часов и признак доступности для записи.
+ */
+export type Slot = {
+    /**
+     * Дата и время старта слота, ISO 8601 (YYYY-MM-DDTHH:mm:ss), время Europe/Moscow.
+     */
+    start: string;
+    /**
+     * Доступен ли слот для записи.
+     */
+    available: boolean;
+};
+
 export type ListEventTypesData = {
     body?: never;
     path?: never;
@@ -41,3 +69,37 @@ export type ListEventTypesResponses = {
 };
 
 export type ListEventTypesResponse = ListEventTypesResponses[keyof ListEventTypesResponses];
+
+export type ListSlotsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Идентификатор типа встречи.
+         */
+        eventTypeId: string;
+        /**
+         * Дата, на которую запрашиваются слоты (YYYY-MM-DD).
+         */
+        date: string;
+    };
+    url: '/slots';
+};
+
+export type ListSlotsErrors = {
+    /**
+     * The server could not understand the request due to invalid syntax.
+     */
+    400: ApiError;
+};
+
+export type ListSlotsError = ListSlotsErrors[keyof ListSlotsErrors];
+
+export type ListSlotsResponses = {
+    /**
+     * The request has succeeded.
+     */
+    200: Array<Slot>;
+};
+
+export type ListSlotsResponse = ListSlotsResponses[keyof ListSlotsResponses];
