@@ -206,6 +206,36 @@ export type CreateEventTypeResponses = {
 
 export type CreateEventTypeResponse = CreateEventTypeResponses[keyof CreateEventTypeResponses];
 
+export type GetEventTypeData = {
+    body?: never;
+    path: {
+        /**
+         * Идентификатор типа встречи.
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/event-types/{id}';
+};
+
+export type GetEventTypeErrors = {
+    /**
+     * Тип встречи не найден.
+     */
+    404: ApiError;
+};
+
+export type GetEventTypeError = GetEventTypeErrors[keyof GetEventTypeErrors];
+
+export type GetEventTypeResponses = {
+    /**
+     * The request has succeeded.
+     */
+    200: EventType;
+};
+
+export type GetEventTypeResponse = GetEventTypeResponses[keyof GetEventTypeResponses];
+
 export type ListSlotsData = {
     body?: never;
     path?: never;

@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateBookingData, CreateBookingErrors, CreateBookingResponses, CreateEventTypeData, CreateEventTypeErrors, CreateEventTypeResponses, ListBookingsData, ListBookingsResponses, ListEventTypesData, ListEventTypesResponses, ListSlotsData, ListSlotsErrors, ListSlotsResponses } from './types.gen';
+import type { CreateBookingData, CreateBookingErrors, CreateBookingResponses, CreateEventTypeData, CreateEventTypeErrors, CreateEventTypeResponses, GetEventTypeData, GetEventTypeErrors, GetEventTypeResponses, ListBookingsData, ListBookingsResponses, ListEventTypesData, ListEventTypesResponses, ListSlotsData, ListSlotsErrors, ListSlotsResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -51,6 +51,11 @@ export const createEventType = <ThrowOnError extends boolean = false>(options: O
         ...options.headers
     }
 });
+
+/**
+ * Получение типа встречи по идентификатору.
+ */
+export const getEventType = <ThrowOnError extends boolean = false>(options: Options<GetEventTypeData, ThrowOnError>): RequestResult<GetEventTypeResponses, GetEventTypeErrors, ThrowOnError> => (options.client ?? client).get<GetEventTypeResponses, GetEventTypeErrors, ThrowOnError>({ url: '/event-types/{id}', ...options });
 
 /**
  * Сетка 30-минутных стартов с признаком занятости на запрошенную дату.

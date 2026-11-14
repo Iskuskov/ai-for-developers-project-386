@@ -7,7 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 /**
- * Интеграционный тест шва HTTP API: GET /event-types отдаёт seed-список Типов встреч по контракту.
+ * Интеграционный тест шва HTTP API: GET /event-types отдаёт seed-список Типов встреч по контракту;
+ * GET /event-types/{id} — один Тип встречи, а для неизвестного идентификатора — 404 { code, message
+ * }.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureRestTestClient
@@ -50,5 +52,39 @@ class EventTypesApiTest {
         .isEqualTo("Обсуждение кода и правок по итогам ревью.")
         .jsonPath("$[2].durationMinutes")
         .isEqualTo(60);
+  }
+
+  @Test
+  void getEventTypeReturnsTypeById() {
+    client
+        .get()
+        .uri("/event-types/consultation")
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .jsonPath("$.id")
+        .isEqualTo("consultation")
+        .jsonPath("$.title")
+        .isEqualTo("Консультация")
+        .jsonPath("$.description")
+        .isEqualTo("Разбор вопроса или задачи в течение получаса.")
+        .jsonPath("$.durationMinutes")
+        .isEqualTo(30);
+  }
+
+  @Test
+  void unknownEventTypeIdReturns404WithUnifiedErrorBody() {
+    client
+        .get()
+        .uri("/event-types/nope")
+        .exchange()
+        .expectStatus()
+        .isNotFound()
+        .expectBody()
+        .jsonPath("$.code")
+        .isEqualTo("EVENT_TYPE_NOT_FOUND")
+        .jsonPath("$.message")
+        .isNotEmpty();
   }
 }

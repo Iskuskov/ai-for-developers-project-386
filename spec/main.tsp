@@ -30,6 +30,13 @@ interface EventTypes {
   @doc("Список типов встреч, доступных для записи.")
   @get list(): EventType[];
 
+  @operationId("getEventType")
+  @doc("Получение типа встречи по идентификатору.")
+  @get get(
+    @doc("Идентификатор типа встречи.")
+    @path id: string,
+  ): EventType | NotFoundError;
+
   @operationId("createEventType")
   @doc("Создание типа встречи владельцем.")
   @post create(@body requestBody: EventTypeInput): CreatedEventType | ValidationError;
@@ -69,6 +76,14 @@ model ApiError {
 @error
 model ValidationError {
   @statusCode statusCode: 400;
+
+  @body body: ApiError;
+}
+
+@doc("Тип встречи не найден.")
+@error
+model NotFoundError {
+  @statusCode statusCode: 404;
 
   @body body: ApiError;
 }

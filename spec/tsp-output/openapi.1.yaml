@@ -95,6 +95,32 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/EventTypeInput'
+  /event-types/{id}:
+    get:
+      operationId: getEventType
+      description: Получение типа встречи по идентификатору.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор типа встречи.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventType'
+        '404':
+          description: Тип встречи не найден.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      tags:
+        - EventTypes
   /slots:
     get:
       operationId: listSlots

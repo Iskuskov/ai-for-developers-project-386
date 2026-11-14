@@ -26,7 +26,8 @@ public class ApiExceptionHandler {
 
   @ExceptionHandler(EventTypeNotFoundException.class)
   public ResponseEntity<ApiError> eventTypeNotFound(EventTypeNotFoundException exception) {
-    return badRequest("EVENT_TYPE_NOT_FOUND", exception.getMessage());
+    return ResponseEntity.status(exception.status())
+        .body(new ApiError("EVENT_TYPE_NOT_FOUND", exception.getMessage()));
   }
 
   @ExceptionHandler(SlotTakenException.class)
