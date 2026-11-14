@@ -40,6 +40,11 @@ description = "Вся цепочка контракта: TypeSpec → OpenAPI �
 depends = ["gen:spec"]
 run = "cd spec && pnpm gen:client"
 
+[tasks."install:playwright"]
+description = "Установить браузер Chromium для Playwright (e2e)"
+depends = ["install:frontend"]
+run = "cd frontend && pnpm exec playwright install chromium"
+
 [tasks."dev:backend"]
 description = "Запустить бекенд (http://localhost:8080)"
 run = "cd backend && ./gradlew bootRun"
@@ -76,9 +81,19 @@ description = "Проверка типов и сборка фронтенда"
 depends = ["install:frontend"]
 run = "cd frontend && pnpm build"
 
+[tasks."check:e2e"]
+description = "Сквозной браузерный сценарий (Playwright) на живом стеке: бекенд + собранный фронтенд"
+depends = ["build:frontend", "install:playwright"]
+run = "cd frontend && pnpm exec playwright test"
+
+[tasks."check:e2e:optional"]
+description = "Сквозной сценарий Playwright; пропускается, если браузеры Chromium не установлены"
+depends = ["build:frontend"]
+run = "cd frontend && node scripts/e2e-optional.mjs"
+
 [tasks.check]
-description = "Все проверки: линтеры, тесты, сборка фронтенда (то же, что в CI)"
-depends = ["lint:backend", "lint:frontend", "test:backend", "test:frontend", "build:frontend"]
+description = "Все проверки: линтеры, тесты, сборка фронтенда, e2e (то же, что в CI)"
+depends = ["lint:backend", "lint:frontend", "test:backend", "test:frontend", "check:e2e"]
 
 [daemons.backend]
 task = "dev:backend"

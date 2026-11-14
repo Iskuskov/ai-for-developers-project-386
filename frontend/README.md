@@ -2,6 +2,23 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
+## E2E (Playwright)
+
+Один сквозной «дымовой» сценарий: `frontend/e2e/smoke.spec.ts` — гость бронирует свободный слот,
+владелец видит Запись в списке. Стек поднимает сам Playwright (`webServer` в
+`playwright.config.ts`): бекенд через `./gradlew bootRun` (:8080) и собранный фронтенд через
+`vite preview` (:4173, с прокси API на бекенд).
+
+```sh
+pnpm install                              # зависимости, включая @playwright/test
+pnpm exec playwright install chromium     # браузер для e2e (один раз)
+pnpm exec playwright test                 # при уже собранном dist (pnpm build)
+```
+
+Через mise из корня репозитория: `mise run install:playwright` (браузер), `mise run check:e2e`
+(сборка фронтенда + стек + сценарий), `mise run check:e2e:optional` (то же, но пропуск, если
+браузер не установлен). В `mise run check` e2e выполняется всегда.
+
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
