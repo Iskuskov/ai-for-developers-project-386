@@ -3,6 +3,7 @@ package com.callcalendar;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,16 @@ public class BookingStore implements BookingOccupancy {
     return items.stream()
         .filter(stored -> stored.interval().start().toLocalDate().equals(date))
         .map(StoredBooking::interval)
+        .toList();
+  }
+
+  /** Предстоящие Записи всех Типов встреч (старт не раньше now) по возрастанию времени старта. */
+  @Override
+  public List<Booking> findUpcoming(LocalDateTime now) {
+    return items.stream()
+        .filter(stored -> !stored.interval().start().isBefore(now))
+        .sorted(Comparator.comparing(stored -> stored.interval().start()))
+        .map(StoredBooking::booking)
         .toList();
   }
 

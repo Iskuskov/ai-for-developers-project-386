@@ -7,13 +7,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Создание Записей Гостями по контракту Call Calendar API. */
+/** Создание Записей Гостями и просмотр предстоящих Записей по контракту Call Calendar API. */
 @RestController
 @Tag(name = "Bookings")
 public class BookingController {
@@ -22,9 +26,34 @@ public class BookingController {
 
   private final EventTypeStore eventTypeStore;
 
-  BookingController(BookingService bookingService, EventTypeStore eventTypeStore) {
+  private final BookingOccupancy bookings;
+
+  private final Clock clock;
+
+  BookingController(
+      BookingService bookingService,
+      EventTypeStore eventTypeStore,
+      BookingOccupancy bookings,
+      Clock clock) {
     this.bookingService = bookingService;
     this.eventTypeStore = eventTypeStore;
+    this.bookings = bookings;
+    this.clock = clock;
+  }
+
+  @Operation(
+      operationId = "listBookings",
+      description = "Предстоящие записи всех типов одним списком, по возрастанию времени старта.")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "The request has succeeded.",
+        useReturnTypeSchema = true)
+  })
+  @GetMapping(value = "/bookings", produces = "application/json")
+  public List<Booking> list() {
+    LocalDateTime now = clock.instant().atZone(SlotService.WORK_ZONE).toLocalDateTime();
+    return bookings.findUpcoming(now);
   }
 
   @Operation(
