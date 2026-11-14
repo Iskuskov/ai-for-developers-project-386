@@ -151,6 +151,10 @@ model SlotTakenError {
 @route("/bookings")
 @tag("Bookings")
 interface Bookings {
+  @operationId("listBookings")
+  @doc("Предстоящие записи всех типов одним списком, по возрастанию времени старта.")
+  @get list(): Booking[];
+
   @operationId("createBooking")
   @doc("Создание записи гостем на свободный слот.")
   @post create(@body requestBody: BookingInput): CreatedBooking | SlotTakenError | ValidationError;

@@ -8,6 +8,21 @@ tags:
   - name: Bookings
 paths:
   /bookings:
+    get:
+      operationId: listBookings
+      description: Предстоящие записи всех типов одним списком, по возрастанию времени старта.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+      tags:
+        - Bookings
     post:
       operationId: createBooking
       description: Создание записи гостем на свободный слот.
