@@ -26,6 +26,20 @@ run = "cd backend && ./gradlew help --console=plain -q"
 description = "Установить зависимости фронтенда (pnpm)"
 run = "cd frontend && pnpm install --frozen-lockfile"
 
+[tasks."install:spec"]
+description = "Установить зависимости TypeSpec-проекта спецификации (pnpm)"
+run = "cd spec && pnpm install --frozen-lockfile"
+
+[tasks."gen:spec"]
+description = "Скомпилировать TypeSpec в OpenAPI (spec/tsp-output/openapi.1.yaml)"
+depends = ["install:spec"]
+run = "cd spec && pnpm gen:spec"
+
+[tasks."gen:client"]
+description = "Вся цепочка контракта: TypeSpec → OpenAPI → SDK фронтенда"
+depends = ["gen:spec"]
+run = "cd spec && pnpm gen:client"
+
 [tasks."dev:backend"]
 description = "Запустить бекенд (http://localhost:8080)"
 run = "cd backend && ./gradlew bootRun"

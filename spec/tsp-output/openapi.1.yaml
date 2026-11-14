@@ -1,0 +1,47 @@
+openapi: 3.1.0
+info:
+  title: Call Calendar API
+  version: 1.0.0
+tags:
+  - name: EventTypes
+paths:
+  /event-types:
+    get:
+      operationId: listEventTypes
+      description: Список типов встреч, доступных для записи.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventType'
+      tags:
+        - EventTypes
+components:
+  schemas:
+    EventType:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - durationMinutes
+      properties:
+        id:
+          type: string
+          description: Идентификатор типа встречи.
+        title:
+          type: string
+          description: Название типа встречи.
+        description:
+          type: string
+          description: Описание для гостей.
+        durationMinutes:
+          type: integer
+          format: int32
+          description: Длительность звонка в минутах.
+      description: 'Вид звонка: название, описание и длительность.'
