@@ -211,7 +211,7 @@ export function SlotCalendarPage() {
             </Box>
           )}
           <Anchor component={Link} to="/booking" size="sm">
-            ← К видам брони
+            ← К типам встреч
           </Anchor>
         </Stack>
       </Container>

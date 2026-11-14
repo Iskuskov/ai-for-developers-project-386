@@ -44,14 +44,14 @@ describe('App', () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(screen.getByRole('link', { name: 'Записаться →' }))
-    expect(screen.getByRole('heading', { name: 'Виды брони' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Типы встреч' })).toBeInTheDocument()
     expect(await screen.findByRole('heading', { name: 'Знакомство' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: '← На главную' })).toBeInTheDocument()
   })
 
   it('shows the booking page with event types when opened directly', async () => {
     render(<App />, { route: '/booking' })
-    expect(screen.getByRole('heading', { name: 'Виды брони' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Типы встреч' })).toBeInTheDocument()
     expect(await screen.findByRole('heading', { name: 'Знакомство' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: '← На главную' })).toBeInTheDocument()
   })

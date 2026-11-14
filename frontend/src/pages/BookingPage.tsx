@@ -44,7 +44,7 @@ export function BookingPage() {
       <AppHeader />
       <Container size="sm" py="xl">
         <Stack gap="md">
-          <Title order={2}>Виды брони</Title>
+          <Title order={2}>Типы встреч</Title>
           {hasError && <Text c="red">Не удалось загрузить типы встреч</Text>}
           {!hasError && eventTypes === null && (
             <Group justify="center" py="xl">

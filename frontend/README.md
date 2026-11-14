@@ -4,7 +4,7 @@ This template provides a minimal setup to get React working in Vite with HMR and
 
 ## E2E (Playwright)
 
-Один сквозной «дымовой» сценарий: `frontend/e2e/smoke.spec.ts` — гость бронирует свободный слот,
+Один сквозной «дымовой» сценарий: `frontend/e2e/smoke.spec.ts` — гость записывается на свободный слот,
 владелец видит Запись в списке. Стек поднимает сам Playwright (`webServer` в
 `playwright.config.ts`): бекенд через `./gradlew bootRun` (:8080) и собранный фронтенд через
 `vite preview` (:4173, с прокси API на бекенд).

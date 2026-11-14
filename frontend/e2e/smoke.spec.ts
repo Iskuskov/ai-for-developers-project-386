@@ -17,11 +17,11 @@ async function waitForSlots(page: Page, date: string): Promise<Response> {
 }
 
 test('гость записывается на свободный слот, владелец видит Запись в списке', async ({ page }) => {
-  // Гость: главная → «Записаться →» → виды брони
+  // Гость: главная → «Записаться →» → типы встреч
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1, name: 'Календарь звонков' })).toBeVisible()
   await page.getByRole('link', { name: 'Записаться →' }).click()
-  await expect(page.getByRole('heading', { name: 'Виды брони' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Типы встреч' })).toBeVisible()
 
   // Выбор seed-типа «Знакомство» на карточке
   const greetingCard = page.locator('.mantine-Card-root').filter({ hasText: 'Знакомство' })
@@ -52,8 +52,8 @@ test('гость записывается на свободный слот, вл
   await expect(page.getByRole('status')).toContainText('Вы записаны: Знакомство')
 
   // Владелец: список Записей содержит эту запись
-  await page.getByRole('link', { name: '← К видам брони' }).click()
-  await expect(page.getByRole('heading', { name: 'Виды брони' })).toBeVisible()
+  await page.getByRole('link', { name: '← К типам встреч' }).click()
+  await expect(page.getByRole('heading', { name: 'Типы встреч' })).toBeVisible()
   await page.getByRole('link', { name: 'Записи' }).click()
   await expect(page.getByRole('heading', { name: 'Записи' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Знакомство' }).first()).toBeVisible()
