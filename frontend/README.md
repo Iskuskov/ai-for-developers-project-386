@@ -16,8 +16,7 @@ pnpm exec playwright test                 # при уже собранном dis
 ```
 
 Через mise из корня репозитория: `mise run install:playwright` (браузер), `mise run check:e2e`
-(сборка фронтенда + стек + сценарий), `mise run check:e2e:optional` (то же, но пропуск, если
-браузер не установлен). В `mise run check` e2e выполняется всегда.
+(сборка фронтенда + стек + сценарий). В `mise run check` e2e выполняется всегда.
 
 Currently, two official plugins are available:
 
