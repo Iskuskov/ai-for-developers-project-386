@@ -10,11 +10,10 @@ import {
   Text,
   Title,
 } from '@mantine/core'
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { listBookings, listEventTypes } from '../shared/api'
-import type { Booking, EventType } from '../shared/api'
 import { AppHeader } from '../shared/AppHeader'
+import { useApi } from '../shared/useApi'
 
 /** Дата и время старта Записи для показа владельцу: «21.01.2026, 10:00». */
 function formatSlotStart(slotStart: string) {
@@ -24,30 +23,10 @@ function formatSlotStart(slotStart: string) {
 }
 
 export function BookingsPage() {
-  const [bookings, setBookings] = useState<Booking[] | null>(null)
-  const [eventTypes, setEventTypes] = useState<EventType[]>([])
-  const [hasError, setHasError] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-    Promise.all([listBookings(), listEventTypes()])
-      .then(([bookingsResult, eventTypesResult]) => {
-        if (!cancelled) {
-          setBookings(bookingsResult.data ?? [])
-          setEventTypes(eventTypesResult.data ?? [])
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setHasError(true)
-        }
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  const titlesById = new Map(eventTypes.map((eventType) => [eventType.id, eventType.title]))
+  const { data: bookings, hasError: bookingsFailed } = useApi(listBookings, [])
+  const { data: eventTypes, hasError: eventTypesFailed } = useApi(listEventTypes, [])
+  const hasError = bookingsFailed || eventTypesFailed
+  const titlesById = new Map((eventTypes ?? []).map((eventType) => [eventType.id, eventType.title]))
 
   return (
     <Box mih="100vh" bg="gray.0">

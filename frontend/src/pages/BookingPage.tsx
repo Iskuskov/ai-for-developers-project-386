@@ -1,43 +1,12 @@
-import {
-  Anchor,
-  Box,
-  Button,
-  Card,
-  Container,
-  Divider,
-  Group,
-  Loader,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core'
-import { useEffect, useState } from 'react'
+import { Anchor, Box, Button, Container, Divider, Group, Loader, Stack, Text, Title } from '@mantine/core'
 import { Link } from 'react-router'
 import { listEventTypes } from '../shared/api'
-import type { EventType } from '../shared/api'
+import { EventTypeCard } from '../shared/EventTypeCard'
 import { AppHeader } from '../shared/AppHeader'
+import { useApi } from '../shared/useApi'
 
 export function BookingPage() {
-  const [eventTypes, setEventTypes] = useState<EventType[] | null>(null)
-  const [hasError, setHasError] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-    listEventTypes()
-      .then((result) => {
-        if (!cancelled) {
-          setEventTypes(result.data ?? [])
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setHasError(true)
-        }
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  const { data: eventTypes, hasError } = useApi(listEventTypes, [])
 
   return (
     <Box mih="100vh" bg="gray.0">
@@ -54,16 +23,11 @@ export function BookingPage() {
           {!hasError && eventTypes !== null && (
             <Stack gap="sm">
               {eventTypes.map((eventType) => (
-                <Card key={eventType.id} withBorder shadow="sm" radius="md" bg="white">
-                  <Stack gap="xs">
-                    <Title order={3}>{eventType.title}</Title>
-                    <Text c="dimmed">{eventType.description}</Text>
-                    <Text size="sm">Длительность: {eventType.durationMinutes} мин</Text>
-                    <Button component={Link} to={`/booking/${eventType.id}`}>
-                      Записаться
-                    </Button>
-                  </Stack>
-                </Card>
+                <EventTypeCard key={eventType.id} eventType={eventType}>
+                  <Button component={Link} to={`/booking/${eventType.id}`}>
+                    Записаться
+                  </Button>
+                </EventTypeCard>
               ))}
             </Stack>
           )}

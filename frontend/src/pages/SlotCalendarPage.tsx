@@ -10,11 +10,13 @@ import {
   TextInput,
   Title,
 } from '@mantine/core'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useParams } from 'react-router'
 import { createBooking, listEventTypes, listSlots } from '../shared/api'
-import type { EventType, Slot } from '../shared/api'
+import type { Slot } from '../shared/api'
+import { AppHeader } from '../shared/AppHeader'
+import { useApi } from '../shared/useApi'
 
 const DAY_COUNT = 14
 
@@ -50,9 +52,8 @@ function slotLabel(start: string): string {
 
 export function SlotCalendarPage() {
   const { eventTypeId } = useParams()
-  const [eventType, setEventType] = useState<EventType | null>(null)
-  const [slots, setSlots] = useState<Slot[] | null>(null)
-  const [hasError, setHasError] = useState(false)
+  const { data: eventTypes } = useApi(listEventTypes, [eventTypeId])
+  const eventType = eventTypes?.find((type) => type.id === eventTypeId) ?? null
   const [selectedDate, setSelectedDate] = useState(() => moscowTodayIso())
   const [selectedStart, setSelectedStart] = useState<string | null>(null)
   const [guestName, setGuestName] = useState('')
@@ -61,6 +62,16 @@ export function SlotCalendarPage() {
   const [formError, setFormError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [reloadToken, setReloadToken] = useState(0)
+  const {
+    data: slots,
+    hasError,
+  } = useApi<Slot[]>(
+    () =>
+      eventTypeId
+        ? listSlots({ query: { eventTypeId, date: selectedDate } })
+        : Promise.resolve({ data: undefined }),
+    [eventTypeId, selectedDate, reloadToken],
+  )
 
   const days = useMemo(() => {
     const [year, month, day] = moscowTodayIso().split('-').map(Number)
@@ -73,48 +84,6 @@ export function SlotCalendarPage() {
     }
     return result
   }, [])
-
-  useEffect(() => {
-    let cancelled = false
-    listEventTypes()
-      .then((result) => {
-        if (!cancelled) {
-          setEventType(result.data?.find((type) => type.id === eventTypeId) ?? null)
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setEventType(null)
-        }
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [eventTypeId])
-
-  useEffect(() => {
-    if (!eventTypeId) {
-      return
-    }
-    let cancelled = false
-    setSelectedStart(null)
-    setSlots(null)
-    setHasError(false)
-    listSlots({ query: { eventTypeId, date: selectedDate } })
-      .then((result) => {
-        if (!cancelled) {
-          setSlots(result.data ?? [])
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setHasError(true)
-        }
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [eventTypeId, selectedDate, reloadToken])
 
   async function handleBookingSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -130,6 +99,7 @@ export function SlotCalendarPage() {
     if (result.error) {
       setFormError(result.error.message)
       if (result.error.code === 'SLOT_TAKEN') {
+        // Слот занят: сбрасываем выбор и перезагружаем сетку слотов
         setSelectedStart(null)
         setReloadToken((token) => token + 1)
       }
@@ -143,15 +113,15 @@ export function SlotCalendarPage() {
     }
   }
 
+  function selectDate(date: string) {
+    setSelectedDate(date)
+    // Смена дня сбрасывает выбранный слот: сетка загружается заново
+    setSelectedStart(null)
+  }
+
   return (
     <Box mih="100vh" bg="gray.0">
-      <Box bg="white" pb="md" pt="md" style={{ borderBottom: '1px solid var(--mantine-color-gray-2)' }}>
-        <Container size="lg">
-          <Anchor component={Link} to="/booking" fw={700} c="dark" underline="never">
-            Календарь звонков
-          </Anchor>
-        </Container>
-      </Box>
+      <AppHeader />
       <Container size="sm" py="xl">
         <Stack gap="md">
           <Title order={2}>{eventType ? `Календарь: ${eventType.title}` : 'Календарь записи'}</Title>
@@ -166,7 +136,7 @@ export function SlotCalendarPage() {
                 key={day.date}
                 size="sm"
                 variant={day.date === selectedDate ? 'filled' : 'default'}
-                onClick={() => setSelectedDate(day.date)}
+                onClick={() => selectDate(day.date)}
               >
                 {day.label}
               </Button>

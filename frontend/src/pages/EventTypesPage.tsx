@@ -2,7 +2,6 @@ import {
   Anchor,
   Box,
   Button,
-  Card,
   Container,
   Divider,
   Group,
@@ -14,38 +13,24 @@ import {
   TextInput,
   Title,
 } from '@mantine/core'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router'
 import { createEventType, listEventTypes } from '../shared/api'
 import type { EventType } from '../shared/api'
+import { EventTypeCard } from '../shared/EventTypeCard'
 import { AppHeader } from '../shared/AppHeader'
+import { useApi } from '../shared/useApi'
 
 export function EventTypesPage() {
-  const [eventTypes, setEventTypes] = useState<EventType[] | null>(null)
-  const [hasError, setHasError] = useState(false)
+  const { data: fetchedTypes, hasError } = useApi(listEventTypes, [])
+  // Созданные владельцем Типы встреч добавляются к загруженному списку без повторного запроса
+  const [createdTypes, setCreatedTypes] = useState<EventType[]>([])
+  const eventTypes = [...(fetchedTypes ?? []), ...createdTypes]
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [durationMinutes, setDurationMinutes] = useState('')
   const [formError, setFormError] = useState<string | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-    listEventTypes()
-      .then((result) => {
-        if (!cancelled) {
-          setEventTypes(result.data ?? [])
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setHasError(true)
-        }
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -59,7 +44,7 @@ export function EventTypesPage() {
     }
     const created = result.data
     if (created) {
-      setEventTypes((current) => [...(current ?? []), created])
+      setCreatedTypes((current) => [...current, created])
       setTitle('')
       setDescription('')
       setDurationMinutes('')
@@ -73,21 +58,15 @@ export function EventTypesPage() {
         <Stack gap="md">
           <Title order={2}>Типы встреч</Title>
           {hasError && <Text c="red">Не удалось загрузить типы встреч</Text>}
-          {!hasError && eventTypes === null && (
+          {!hasError && fetchedTypes === null && (
             <Group justify="center" py="xl">
               <Loader size="sm" />
             </Group>
           )}
-          {!hasError && eventTypes !== null && (
+          {!hasError && fetchedTypes !== null && (
             <Stack gap="sm">
               {eventTypes.map((eventType) => (
-                <Card key={eventType.id} withBorder shadow="sm" radius="md" bg="white">
-                  <Stack gap="xs">
-                    <Title order={3}>{eventType.title}</Title>
-                    <Text c="dimmed">{eventType.description}</Text>
-                    <Text size="sm">Длительность: {eventType.durationMinutes} мин</Text>
-                  </Stack>
-                </Card>
+                <EventTypeCard key={eventType.id} eventType={eventType} />
               ))}
             </Stack>
           )}

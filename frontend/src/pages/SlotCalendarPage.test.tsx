@@ -82,7 +82,7 @@ describe('SlotCalendarPage', () => {
     listEventTypesMock.mockResolvedValue({
       data: [eventType],
     } as Awaited<ReturnType<typeof listEventTypes>>)
-    listSlotsMock.mockResolvedValue({ data: [] } as Awaited<ReturnType<typeof listSlots>>)
+    listSlotsMock.mockResolvedValue({ data: [] as Slot[] } as Awaited<ReturnType<typeof listSlots>>)
     renderCalendarPage()
     await screen.findByRole('heading', { name: /Консультация/ })
     vi.useRealTimers()
