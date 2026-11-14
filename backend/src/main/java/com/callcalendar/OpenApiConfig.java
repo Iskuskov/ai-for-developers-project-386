@@ -24,7 +24,7 @@ public class OpenApiConfig {
   @Bean
   ParameterCustomizer queryParameterNonExploding() {
     return (parameter, methodParameter) -> {
-      if (parameter.getIn() != null && parameter.getIn().equals(ParameterIn.QUERY.toString())) {
+      if (parameter != null && ParameterIn.QUERY.toString().equals(parameter.getIn())) {
         parameter.setExplode(false);
       }
       return parameter;

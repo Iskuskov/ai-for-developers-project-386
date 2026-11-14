@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { listEventTypes } from '../shared/api'
 import type { EventType } from '../shared/api'
+import { AppHeader } from '../shared/AppHeader'
 
 export function BookingPage() {
   const [eventTypes, setEventTypes] = useState<EventType[] | null>(null)
@@ -40,13 +41,7 @@ export function BookingPage() {
 
   return (
     <Box mih="100vh" bg="gray.0">
-      <Box bg="white" pb="md" pt="md" style={{ borderBottom: '1px solid var(--mantine-color-gray-2)' }}>
-        <Container size="lg">
-          <Anchor component={Link} to="/" fw={700} c="dark" underline="never">
-            Календарь звонков
-          </Anchor>
-        </Container>
-      </Box>
+      <AppHeader />
       <Container size="sm" py="xl">
         <Stack gap="md">
           <Title order={2}>Виды брони</Title>

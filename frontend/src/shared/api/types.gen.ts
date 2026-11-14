@@ -5,15 +5,15 @@ export type ClientOptions = {
 };
 
 /**
- * Единый формат ошибок API.
+ * Ошибка запроса: машиночитаемый код и сообщение для человека.
  */
 export type ApiError = {
     /**
-     * Машинный код ошибки.
+     * Машиночитаемый код ошибки.
      */
     code: string;
     /**
-     * Понятное человеку сообщение.
+     * Сообщение об ошибке для человека.
      */
     message: string;
 };
@@ -26,6 +26,24 @@ export type EventType = {
      * Идентификатор типа встречи.
      */
     id: string;
+    /**
+     * Название типа встречи.
+     */
+    title: string;
+    /**
+     * Описание для гостей.
+     */
+    description: string;
+    /**
+     * Длительность звонка в минутах.
+     */
+    durationMinutes: number;
+};
+
+/**
+ * Данные для создания типа встречи: название, описание и длительность.
+ */
+export type EventTypeInput = {
     /**
      * Название типа встречи.
      */
@@ -70,6 +88,31 @@ export type ListEventTypesResponses = {
 
 export type ListEventTypesResponse = ListEventTypesResponses[keyof ListEventTypesResponses];
 
+export type CreateEventTypeData = {
+    body: EventTypeInput;
+    path?: never;
+    query?: never;
+    url: '/event-types';
+};
+
+export type CreateEventTypeErrors = {
+    /**
+     * Некорректные данные запроса.
+     */
+    400: ApiError;
+};
+
+export type CreateEventTypeError = CreateEventTypeErrors[keyof CreateEventTypeErrors];
+
+export type CreateEventTypeResponses = {
+    /**
+     * Созданный тип встречи.
+     */
+    201: EventType;
+};
+
+export type CreateEventTypeResponse = CreateEventTypeResponses[keyof CreateEventTypeResponses];
+
 export type ListSlotsData = {
     body?: never;
     path?: never;
@@ -88,7 +131,7 @@ export type ListSlotsData = {
 
 export type ListSlotsErrors = {
     /**
-     * The server could not understand the request due to invalid syntax.
+     * Некорректные данные запроса.
      */
     400: ApiError;
 };

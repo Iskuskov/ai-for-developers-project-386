@@ -23,8 +23,11 @@ public class SlotController {
 
   private final SlotService slotService;
 
-  SlotController(SlotService slotService) {
+  private final EventTypeStore eventTypeStore;
+
+  SlotController(SlotService slotService, EventTypeStore eventTypeStore) {
     this.slotService = slotService;
+    this.eventTypeStore = eventTypeStore;
   }
 
   @Operation(
@@ -37,11 +40,8 @@ public class SlotController {
         useReturnTypeSchema = true),
     @ApiResponse(
         responseCode = "400",
-        description = "The server could not understand the request due to invalid syntax.",
-        content =
-            @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ApiError.class)))
+        description = "Некорректные данные запроса.",
+        content = @Content(schema = @Schema(implementation = ApiError.class)))
   })
   @GetMapping(value = "/slots", produces = "application/json")
   public List<Slot> list(
@@ -61,7 +61,7 @@ public class SlotController {
               explode = Explode.FALSE)
           LocalDate date) {
     EventType eventType =
-        EventType.seed().stream()
+        eventTypeStore.findAll().stream()
             .filter(type -> type.id().equals(eventTypeId))
             .findFirst()
             .orElseThrow(() -> new EventTypeNotFoundException(eventTypeId));

@@ -1,16 +1,13 @@
 package com.callcalendar;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 
-/** Единый формат ошибок API. */
-@Schema(description = "Единый формат ошибок API.")
+/** Ошибка запроса: машиночитаемый код и сообщение для человека. */
+@Schema(description = "Ошибка запроса: машиночитаемый код и сообщение для человека.")
 public record ApiError(
-    @NotNull
-        @Schema(description = "Машинный код ошибки.", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Машиночитаемый код ошибки.", requiredMode = Schema.RequiredMode.REQUIRED)
         String code,
-    @NotNull
-        @Schema(
-            description = "Понятное человеку сообщение.",
+    @Schema(
+            description = "Сообщение об ошибке для человека.",
             requiredMode = Schema.RequiredMode.REQUIRED)
         String message) {}

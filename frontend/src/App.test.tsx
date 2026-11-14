@@ -8,6 +8,7 @@ import App from './App'
 
 vi.mock('./shared/api', () => ({
   listEventTypes: vi.fn(),
+  createEventType: vi.fn(),
 }))
 
 const listEventTypesMock = vi.mocked(listEventTypes)
@@ -49,5 +50,14 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: 'Виды брони' })).toBeInTheDocument()
     expect(await screen.findByRole('heading', { name: 'Знакомство' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: '← На главную' })).toBeInTheDocument()
+  })
+
+  it('navigates to the event types page from the shared header', async () => {
+    const user = userEvent.setup()
+    render(<App />, { route: '/booking' })
+    await user.click(screen.getByRole('link', { name: 'Типы встреч' }))
+
+    expect(screen.getByRole('heading', { name: 'Типы встреч' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Знакомство' })).toBeInTheDocument()
   })
 })

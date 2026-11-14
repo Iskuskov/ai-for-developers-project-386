@@ -1,16 +1,29 @@
 package com.callcalendar;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Просмотр Типов встреч по контракту Call Calendar API. */
+/** Просмотр и создание Типов встреч по контракту Call Calendar API. */
 @RestController
 @Tag(name = "EventTypes")
 public class EventTypeController {
+
+  private final EventTypeStore store;
+
+  public EventTypeController(EventTypeStore store) {
+    this.store = store;
+  }
 
   @Operation(
       operationId = "listEventTypes",
@@ -21,6 +34,21 @@ public class EventTypeController {
       useReturnTypeSchema = true)
   @GetMapping(value = "/event-types", produces = "application/json")
   public List<EventType> list() {
-    return EventType.seed();
+    return store.findAll();
+  }
+
+  @Operation(operationId = "createEventType", description = "Создание типа встречи владельцем.")
+  @ApiResponse(
+      responseCode = "201",
+      description = "Созданный тип встречи.",
+      useReturnTypeSchema = true)
+  @ApiResponse(
+      responseCode = "400",
+      description = "Некорректные данные запроса.",
+      content = @Content(schema = @Schema(implementation = ApiError.class)))
+  @PostMapping(value = "/event-types", consumes = "application/json", produces = "application/json")
+  @ResponseStatus(HttpStatus.CREATED)
+  public EventType create(@Valid @RequestBody EventTypeInput input) {
+    return store.create(input);
   }
 }
