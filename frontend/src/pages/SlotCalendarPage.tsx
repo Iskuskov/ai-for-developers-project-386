@@ -7,11 +7,13 @@ import {
   Loader,
   Stack,
   Text,
+  TextInput,
   Title,
 } from '@mantine/core'
 import { useEffect, useMemo, useState } from 'react'
+import type { FormEvent } from 'react'
 import { Link, useParams } from 'react-router'
-import { listEventTypes, listSlots } from '../shared/api'
+import { createBooking, listEventTypes, listSlots } from '../shared/api'
 import type { EventType, Slot } from '../shared/api'
 
 const DAY_COUNT = 14
@@ -41,6 +43,12 @@ export function SlotCalendarPage() {
   const [hasError, setHasError] = useState(false)
   const [selectedDate, setSelectedDate] = useState(() => isoDate(new Date()))
   const [selectedStart, setSelectedStart] = useState<string | null>(null)
+  const [guestName, setGuestName] = useState('')
+  const [guestEmail, setGuestEmail] = useState('')
+  const [confirmation, setConfirmation] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [reloadToken, setReloadToken] = useState(0)
 
   const days = useMemo(() => {
     const result: { date: string; label: string }[] = []
@@ -92,7 +100,34 @@ export function SlotCalendarPage() {
     return () => {
       cancelled = true
     }
-  }, [eventTypeId, selectedDate])
+  }, [eventTypeId, selectedDate, reloadToken])
+
+  async function handleBookingSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (!eventTypeId || !selectedStart) {
+      return
+    }
+    setIsSubmitting(true)
+    setFormError(null)
+    const result = await createBooking({
+      body: { eventTypeId, slotStart: selectedStart, guestName, guestEmail },
+    })
+    setIsSubmitting(false)
+    if (result.error) {
+      setFormError(result.error.message)
+      if (result.error.code === 'SLOT_TAKEN') {
+        setSelectedStart(null)
+        setReloadToken((token) => token + 1)
+      }
+      return
+    }
+    const booking = result.data
+    if (booking && eventType) {
+      setConfirmation(`Вы записаны: ${eventType.title}, ${slotLabel(booking.slotStart)}`)
+      setGuestName('')
+      setGuestEmail('')
+    }
+  }
 
   return (
     <Box mih="100vh" bg="gray.0">
@@ -145,6 +180,36 @@ export function SlotCalendarPage() {
             </Group>
           )}
           {selectedStart && <Text>Выбрано время: {slotLabel(selectedStart)}</Text>}
+          {confirmation && (
+            <Text c="green" role="status">
+              {confirmation}
+            </Text>
+          )}
+          {eventType && !confirmation && (
+            <Box component="section" aria-label="Форма записи">
+              <Title order={3}>Запись</Title>
+              <form onSubmit={handleBookingSubmit}>
+                <Stack gap="sm">
+                  <TextInput
+                    label="Имя"
+                    placeholder="Как к вам обращаться"
+                    value={guestName}
+                    onChange={(change) => setGuestName(change.currentTarget.value)}
+                  />
+                  <TextInput
+                    label="Email"
+                    placeholder="guest@example.com"
+                    value={guestEmail}
+                    onChange={(change) => setGuestEmail(change.currentTarget.value)}
+                  />
+                  {formError && <Text c="red">{formError}</Text>}
+                  <Button type="submit" w="fit-content" disabled={!selectedStart || isSubmitting}>
+                    Записаться
+                  </Button>
+                </Stack>
+              </form>
+            </Box>
+          )}
           <Anchor component={Link} to="/booking" size="sm">
             ← К видам брони
           </Anchor>
