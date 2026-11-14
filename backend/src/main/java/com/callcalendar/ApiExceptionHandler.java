@@ -29,6 +29,17 @@ public class ApiExceptionHandler {
     return badRequest("EVENT_TYPE_NOT_FOUND", exception.getMessage());
   }
 
+  @ExceptionHandler(SlotTakenException.class)
+  public ResponseEntity<ApiError> slotTaken(SlotTakenException exception) {
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(new ApiError("SLOT_TAKEN", exception.getMessage()));
+  }
+
+  @ExceptionHandler(InvalidBookingException.class)
+  public ResponseEntity<ApiError> invalidBooking(InvalidBookingException exception) {
+    return badRequest(exception.getCode(), exception.getMessage());
+  }
+
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   public ResponseEntity<ApiError> invalidQueryParameter(
       MethodArgumentTypeMismatchException exception) {

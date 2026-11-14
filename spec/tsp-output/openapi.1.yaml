@@ -167,9 +167,11 @@ components:
       properties:
         eventTypeId:
           type: string
+          minLength: 1
           description: Идентификатор типа встречи.
         slotStart:
           type: string
+          minLength: 1
           description: Дата и время старта слота, ISO 8601 (YYYY-MM-DDTHH:mm:ss), время Europe/Moscow.
         guestName:
           type: string
@@ -177,6 +179,7 @@ components:
           description: Имя гостя.
         guestEmail:
           type: string
+          minLength: 1
           description: Email гостя.
       description: 'Данные для создания записи: тип встречи, старт слота, имя и email гостя.'
     EventType:

@@ -117,9 +117,11 @@ model Booking {
 @doc("Данные для создания записи: тип встречи, старт слота, имя и email гостя.")
 model BookingInput {
   @doc("Идентификатор типа встречи.")
+  @minLength(1)
   eventTypeId: string;
 
   @doc("Дата и время старта слота, ISO 8601 (YYYY-MM-DDTHH:mm:ss), время Europe/Moscow.")
+  @minLength(1)
   slotStart: string;
 
   @doc("Имя гостя.")
@@ -127,6 +129,7 @@ model BookingInput {
   guestName: string;
 
   @doc("Email гостя.")
+  @minLength(1)
   guestEmail: string;
 }
 

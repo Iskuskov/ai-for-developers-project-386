@@ -1,11 +1,13 @@
 package com.callcalendar;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Занятые интервалы Записей; шов для хранилища Записей, которое появится вместе с POST /bookings.
+ * Занятые интервалы Записей и занятие новых: шов между расчётом свободных Слотов, созданием Записей
+ * и хранилищем Записей.
  */
 public interface BookingOccupancy {
 
@@ -19,4 +21,11 @@ public interface BookingOccupancy {
 
   /** Интервалы Записей, приходящиеся на указанную дату. */
   List<Interval> intervalsOn(LocalDate date);
+
+  /**
+   * Атомарно занимает полуинтервал [старт Записи, старт + duration) новой Записью: если он не
+   * пересекается с уже занятыми интервалами, Запись сохраняется и возвращается true; иначе
+   * состояние не меняется и возвращается false.
+   */
+  boolean reserve(Booking booking, Duration duration);
 }
