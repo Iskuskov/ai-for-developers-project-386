@@ -1,0 +1,7 @@
+.git
+**/node_modules
+**/build
+**/dist
+**/.gradle
+frontend/e2e
+**/.pnpm-store
