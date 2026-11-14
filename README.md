@@ -43,9 +43,9 @@
 
 ## Публичная ссылка
 
-Приложение задеплоено на Render: [https://call-calendar.onrender.com](https://call-calendar.onrender.com)
+Приложение задеплоено на Render (Free-план): [https://ai-for-developers-project-386-yhla.onrender.com](https://ai-for-developers-project-386-yhla.onrender.com)
 
-<!-- LINK_PLACEHOLDER: заменяется на фактический URL после первого деплоя -->
+После 15 минут простоя сервис засыпает: первый запрос будит его примерно за 30–60 секунд. Данные хранятся в памяти процесса и сбрасываются при рестарте или редеплое (см. Ограничения).
 
 ## Docker
 
