@@ -167,6 +167,28 @@ class BookingsApiTest {
   }
 
   @Test
+  void overlyLongGuestNameReturnsContractError() {
+    nowIs(NOW);
+    client
+        .post()
+        .uri("/bookings")
+        .body(
+            Map.of(
+                "eventTypeId", "consultation",
+                "slotStart", "2026-01-21T10:00:00",
+                "guestName", "А".repeat(101),
+                "guestEmail", "guest@example.com"))
+        .exchange()
+        .expectStatus()
+        .isBadRequest()
+        .expectBody()
+        .jsonPath("$.code")
+        .isEqualTo("VALIDATION_FAILED")
+        .jsonPath("$.message")
+        .isNotEmpty();
+  }
+
+  @Test
   void blankGuestNameReturnsContractError() {
     nowIs(NOW);
     client

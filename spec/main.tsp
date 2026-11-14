@@ -141,6 +141,7 @@ model BookingInput {
 
   @doc("Имя гостя.")
   @minLength(1)
+  @maxLength(100)
   guestName: string;
 
   @doc("Email гостя.")

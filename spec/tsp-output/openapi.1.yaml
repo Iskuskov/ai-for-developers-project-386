@@ -217,6 +217,7 @@ components:
         guestName:
           type: string
           minLength: 1
+          maxLength: 100
           description: Имя гостя.
         guestEmail:
           type: string

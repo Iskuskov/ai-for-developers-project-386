@@ -2,6 +2,7 @@ package com.callcalendar;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 /** Данные для создания записи: тип встречи, старт слота, имя и email гостя. */
 @Schema(description = "Данные для создания записи: тип встречи, старт слота, имя и email гостя.")
@@ -18,6 +19,7 @@ public record BookingInput(
             requiredMode = Schema.RequiredMode.REQUIRED)
         String slotStart,
     @NotBlank(message = "Имя не может быть пустым")
+        @Size(min = 1, max = 100, message = "Имя не может быть длиннее 100 символов")
         @Schema(description = "Имя гостя.", requiredMode = Schema.RequiredMode.REQUIRED)
         String guestName,
     @NotBlank(message = "Email не может отсутствовать")
