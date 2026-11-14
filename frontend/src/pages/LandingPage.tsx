@@ -33,7 +33,7 @@ export function LandingPage() {
               Календарь звонков
             </Title>
             <Text size="lg" c="dimmed" maw={480}>
-              Один экран, понятные слоты, быстрая бронь. Выберите время и запишитесь на звонок без
+              Один экран, понятные слоты, быстрая запись. Выберите время и запишитесь на звонок без
               лишних шагов.
             </Text>
             <Button component={Link} to="/booking" size="lg" w="fit-content" mt="xs">

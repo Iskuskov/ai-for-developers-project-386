@@ -26,6 +26,32 @@ run = "cd backend && ./gradlew help --console=plain -q"
 description = "Установить зависимости фронтенда (pnpm)"
 run = "cd frontend && pnpm install --frozen-lockfile"
 
+[tasks."install:spec"]
+description = "Установить зависимости TypeSpec-проекта спецификации (pnpm)"
+run = "cd spec && pnpm install --frozen-lockfile"
+
+[tasks."gen:spec"]
+description = "Скомпилировать TypeSpec в OpenAPI (spec/tsp-output/openapi.1.yaml)"
+depends = ["install:spec"]
+run = "cd spec && pnpm gen:spec"
+
+[tasks."gen:client"]
+description = "Вся цепочка контракта: TypeSpec → OpenAPI → SDK фронтенда"
+depends = ["gen:spec"]
+run = "cd spec && pnpm gen:client"
+
+[tasks."gen:check"]
+description = "Перегенерировать контракт и SDK, упасть при ручных правках сгенерированного"
+depends = ["gen:client"]
+run = """
+git diff --exit-code -- spec/main.tsp spec/tsp-output frontend/src/shared/api   || (echo 'Сгенерированные файлы отличаются от закоммиченных: контракт или шаблоны менялись без перегенерации. Запустите mise run gen:client и закоммитьте результат; сгенерированное руками не правим.' && exit 1)
+"""
+
+[tasks."install:playwright"]
+description = "Установить браузер Chromium для Playwright (e2e)"
+depends = ["install:frontend"]
+run = "cd frontend && pnpm exec playwright install chromium"
+
 [tasks."dev:backend"]
 description = "Запустить бекенд (http://localhost:8080)"
 run = "cd backend && ./gradlew bootRun"
@@ -62,9 +88,14 @@ description = "Проверка типов и сборка фронтенда"
 depends = ["install:frontend"]
 run = "cd frontend && pnpm build"
 
+[tasks."check:e2e"]
+description = "Сквозной браузерный сценарий (Playwright) на живом стеке: бекенд + собранный фронтенд"
+depends = ["build:frontend", "install:playwright"]
+run = "cd frontend && pnpm exec playwright test"
+
 [tasks.check]
-description = "Все проверки: линтеры, тесты, сборка фронтенда (то же, что в CI)"
-depends = ["lint:backend", "lint:frontend", "test:backend", "test:frontend", "build:frontend"]
+description = "Все проверки: линтеры, тесты, сборка фронтенда, e2e, дрейф генерации (то же, что в CI)"
+depends = ["lint:backend", "lint:frontend", "test:backend", "test:frontend", "gen:check", "check:e2e"]
 
 [daemons.backend]
 task = "dev:backend"

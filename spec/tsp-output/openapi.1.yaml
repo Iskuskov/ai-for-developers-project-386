@@ -1,0 +1,281 @@
+openapi: 3.1.0
+info:
+  title: Call Calendar API
+  version: 1.0.0
+tags:
+  - name: EventTypes
+  - name: Slots
+  - name: Bookings
+paths:
+  /bookings:
+    get:
+      operationId: listBookings
+      description: Предстоящие записи всех типов одним списком, по возрастанию времени старта.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+      tags:
+        - Bookings
+    post:
+      operationId: createBooking
+      description: Создание записи гостем на свободный слот.
+      parameters: []
+      responses:
+        '201':
+          description: Созданная запись.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '400':
+          description: Некорректные данные запроса.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Время уже занято другой записью.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      tags:
+        - Bookings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingInput'
+  /event-types:
+    get:
+      operationId: listEventTypes
+      description: Список типов встреч, доступных для записи.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventType'
+      tags:
+        - EventTypes
+    post:
+      operationId: createEventType
+      description: Создание типа встречи владельцем.
+      parameters: []
+      responses:
+        '201':
+          description: Созданный тип встречи.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventType'
+        '400':
+          description: Некорректные данные запроса.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      tags:
+        - EventTypes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventTypeInput'
+  /event-types/{id}:
+    get:
+      operationId: getEventType
+      description: Получение типа встречи по идентификатору.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор типа встречи.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventType'
+        '404':
+          description: Тип встречи не найден.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      tags:
+        - EventTypes
+  /slots:
+    get:
+      operationId: listSlots
+      description: Сетка 30-минутных стартов с признаком занятости на запрошенную дату.
+      parameters:
+        - name: eventTypeId
+          in: query
+          required: true
+          description: Идентификатор типа встречи.
+          schema:
+            type: string
+          explode: false
+        - name: date
+          in: query
+          required: true
+          description: Дата, на которую запрашиваются слоты (YYYY-MM-DD).
+          schema:
+            type: string
+            format: date
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Slot'
+        '400':
+          description: Некорректные данные запроса.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      tags:
+        - Slots
+components:
+  schemas:
+    ApiError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Машиночитаемый код ошибки.
+        message:
+          type: string
+          description: Сообщение об ошибке для человека.
+      description: 'Ошибка запроса: машиночитаемый код и сообщение для человека.'
+    Booking:
+      type: object
+      required:
+        - id
+        - eventTypeId
+        - slotStart
+        - guestName
+        - guestEmail
+      properties:
+        id:
+          type: string
+          description: Идентификатор записи.
+        eventTypeId:
+          type: string
+          description: Идентификатор типа встречи.
+        slotStart:
+          type: string
+          description: Дата и время старта записи, ISO 8601 (YYYY-MM-DDTHH:mm:ss), время Europe/Moscow.
+        guestName:
+          type: string
+          description: Имя гостя.
+        guestEmail:
+          type: string
+          description: Email гостя.
+      description: 'Запись: подтверждённое бронирование слота гостем.'
+    BookingInput:
+      type: object
+      required:
+        - eventTypeId
+        - slotStart
+        - guestName
+        - guestEmail
+      properties:
+        eventTypeId:
+          type: string
+          minLength: 1
+          description: Идентификатор типа встречи.
+        slotStart:
+          type: string
+          minLength: 1
+          description: Дата и время старта слота, ISO 8601 (YYYY-MM-DDTHH:mm:ss), время Europe/Moscow.
+        guestName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Имя гостя.
+        guestEmail:
+          type: string
+          minLength: 1
+          description: Email гостя.
+      description: 'Данные для создания записи: тип встречи, старт слота, имя и email гостя.'
+    EventType:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - durationMinutes
+      properties:
+        id:
+          type: string
+          description: Идентификатор типа встречи.
+        title:
+          type: string
+          description: Название типа встречи.
+        description:
+          type: string
+          description: Описание для гостей.
+        durationMinutes:
+          type: integer
+          format: int32
+          description: Длительность звонка в минутах.
+      description: 'Вид звонка: название, описание и длительность.'
+    EventTypeInput:
+      type: object
+      required:
+        - title
+        - description
+        - durationMinutes
+      properties:
+        title:
+          type: string
+          minLength: 1
+          description: Название типа встречи.
+        description:
+          type: string
+          description: Описание для гостей.
+        durationMinutes:
+          type: integer
+          format: int32
+          description: Длительность звонка в минутах.
+          exclusiveMinimum: 0
+      description: 'Данные для создания типа встречи: название, описание и длительность.'
+    Slot:
+      type: object
+      required:
+        - start
+        - available
+      properties:
+        start:
+          type: string
+          description: Дата и время старта слота, ISO 8601 (YYYY-MM-DDTHH:mm:ss), время Europe/Moscow.
+        available:
+          type: boolean
+          description: Доступен ли слот для записи.
+      description: 'Слот: старт на 30-минутной сетке рабочих часов и признак доступности для записи.'
