@@ -4,9 +4,10 @@ import { Link } from 'react-router'
 const links = [
   { to: '/booking', label: 'Запись' },
   { to: '/event-types', label: 'Типы встреч' },
+  { to: '/bookings', label: 'Записи' },
 ]
 
-/** Общая шапка приложения: главная /, Запись, Типы встреч. */
+/** Общая шапка приложения: главная /, Запись, Типы встреч, Записи. */
 export function AppHeader() {
   return (
     <Box bg="white" pb="md" pt="md" style={{ borderBottom: '1px solid var(--mantine-color-gray-2)' }}>

@@ -2,16 +2,18 @@ import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '../test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { listEventTypes } from './shared/api'
+import { listBookings, listEventTypes } from './shared/api'
 import type { EventType } from './shared/api'
 import App from './App'
 
 vi.mock('./shared/api', () => ({
+  listBookings: vi.fn(),
   listEventTypes: vi.fn(),
   createEventType: vi.fn(),
 }))
 
 const listEventTypesMock = vi.mocked(listEventTypes)
+const listBookingsMock = vi.mocked(listBookings)
 
 const seed: EventType[] = [
   {
@@ -25,7 +27,9 @@ const seed: EventType[] = [
 describe('App', () => {
   beforeEach(() => {
     listEventTypesMock.mockReset()
+    listBookingsMock.mockReset()
     listEventTypesMock.mockResolvedValue({ data: seed, error: undefined })
+    listBookingsMock.mockResolvedValue({ data: [], error: undefined })
   })
 
   it('renders landing title on the main page', () => {
@@ -59,5 +63,14 @@ describe('App', () => {
 
     expect(screen.getByRole('heading', { name: 'Типы встреч' })).toBeInTheDocument()
     expect(await screen.findByRole('heading', { name: 'Знакомство' })).toBeInTheDocument()
+  })
+
+  it('navigates to the bookings page from the shared header', async () => {
+    const user = userEvent.setup()
+    render(<App />, { route: '/booking' })
+    await user.click(screen.getByRole('link', { name: 'Записи' }))
+
+    expect(screen.getByRole('heading', { name: 'Записи' })).toBeInTheDocument()
+    expect(await screen.findByText('Пока нет записей')).toBeInTheDocument()
   })
 })
