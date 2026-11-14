@@ -37,6 +37,10 @@ public class SlotService {
     LocalDateTime now = clock.instant().atZone(WORK_ZONE).toLocalDateTime();
     LocalDate today = now.toLocalDate();
     boolean inWindow = !date.isBefore(today) && date.isBefore(today.plusDays(BOOKING_WINDOW_DAYS));
+    // Дата вне 14-дневного окна записи (в прошлом или за его пределами) — слотов нет вовсе
+    if (!inWindow) {
+      return List.of();
+    }
     Duration duration = Duration.ofMinutes(eventType.durationMinutes());
     List<BookingOccupancy.Interval> occupied = bookings.intervalsOn(date);
     List<Slot> slots = new ArrayList<>();

@@ -108,6 +108,33 @@ class SlotsApiTest {
   }
 
   @Test
+  void dateBeyondBookingWindowReturnsEmptyList() {
+    nowIs(NOW);
+    // окно записи — 14 дней начиная с сегодняшнего: 2026-02-03 уже за пределами
+    client
+        .get()
+        .uri("/slots?eventTypeId=consultation&date=2026-02-03")
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .json("[]");
+  }
+
+  @Test
+  void pastDateReturnsEmptyList() {
+    nowIs(NOW);
+    client
+        .get()
+        .uri("/slots?eventTypeId=consultation&date=2026-01-19")
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .json("[]");
+  }
+
+  @Test
   void unknownEventTypeIdIsRejectedWithUnifiedErrorBody() {
     nowIs(NOW);
     client
